@@ -4,7 +4,7 @@
 K   = 2;           % size of the alphabet set
 tN  = 100;          % number of time steps
 alphabet = 1:K; 
-N   = 8;   nhbrSize = 3;  % number of sites and neighbor size
+N   = 3;   nhbrSize = 3;  % number of sites and neighbor size
 
 
 P0       = 1+ sin(2*(1:K));   % Initial distribution
@@ -39,6 +39,7 @@ stoCA_par = struct(...
 
 
 
+
 %{
 % test random number generator for each move 
 X = 1:3;
@@ -50,6 +51,5 @@ N=1000; T=zeros(N,length(P)); for i=1:N; T(i,:) = mnrnd(1,P,1); end
 P_estMnd = sum(T,1)/N
 %}
 
-function StocMat_markov()
-% compute the probability transition matrix 
-end
+
+

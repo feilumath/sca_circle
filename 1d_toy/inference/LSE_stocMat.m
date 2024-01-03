@@ -1,4 +1,4 @@
-function [lse_stoc,lse_all,Tmat_lse] = LSE_stocMat(local_p_all,Xt_all,stoCA_par,inferInfo)
+function [lse_stoc,lse_all,Tmat_lse] = LSE_stocMat(local_p_all,Xt_all,stoCA_par,lse_stocON)
 % Estimate the tranform stochastic matrix by LSE: only the first (K-1) row
 % of the matrix as free parameter 
 %  Abar = B otimes Amat; 
@@ -15,7 +15,7 @@ Amat = zeros(K,K);  % phi*phi'   with phi KxN for each t
 bvec = zeros(K,K);  % phi*1_[Xt1](k)             1_[Xt1] size 1xK   >>> lse is column stochastic: sum_j T(k,j) =1
 
 lse_all = cell(1,M);
-for m = 1:M
+parfor m = 1:M
     Amat1traj = zeros(K,K); bvec1traj = zeros(K,K); 
           
     bbar1traj = zeros( (K-1)*K,1);  
@@ -49,18 +49,23 @@ end
 
 Tmat_lse  = Amat\bvec; 
 % lb = 0; ub = 1;  Tmat_lse =  lsqlin(Amat,bvec,[],[],[],[],lb,ub); 
-lse.cvec = Tmat_lse;
-lse.Amat = Amat; 
-lse.bvec = bvec; 
+% lse.cvec = Tmat_lse;
+% lse.Amat = Amat; 
+% lse.bvec = bvec; 
 Tmat_lse = Tmat_lse'; 
 
 
+
 %% LSE estimator: only the first (K-1) row as freee parameter, the last row by stochasticity
-B    =  ones(K-1,K-1)+ eye(K-1); 
-Abar = kron(B,Amat); lb = zeros(K*(K-1),1); ub = 1+lb; 
-lse_stoc = lsqlin(Abar,bbar,[],[],[],[],lb,ub); %  Abar\bbar; 
-lse_stoc = reshape(lse_stoc,[K,K-1]); 
-lse_stoc = [lse_stoc, 1-sum(lse_stoc,2)]; 
-lse_stoc = lse_stoc'; 
+if lse_stocON ==1
+    B    =  ones(K-1,K-1)+ eye(K-1);
+    Abar = kron(B,Amat); lb = zeros(K*(K-1),1); ub = 1+lb;
+    lse_stoc = lsqlin(Abar,bbar,[],[],[],[],lb,ub); %  Abar\bbar;
+    lse_stoc = reshape(lse_stoc,[K,K-1]);
+    lse_stoc = [lse_stoc, 1-sum(lse_stoc,2)];
+    lse_stoc = lse_stoc';
+else
+    lse_stoc =[]; 
+end
 end
 

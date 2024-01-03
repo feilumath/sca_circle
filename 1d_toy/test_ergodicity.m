@@ -16,13 +16,13 @@ disp(XX(:,2:end)-YY(:,1:end-1));
 
 % plot path-average
 N = stoCA_par.N; 
-g = @(x)  x.^2; siteInd = 1:4; 
+g = @(x)  x.^2; siteInd = 1:min(4,N); 
 avgG_X  = zeros(length(siteInd),length(tInd)); 
 for n =1:length(tInd)
     avgG_X(:,n) = mean(g(Xt(siteInd,1:tInd(n))),2);   
 end
 figure; plot(tInd, avgG_X(siteInd,:)','linewidth',1);  xlabel('Time'); ylabel('path average');
-title('Path average'); 
+title('Path average at vertices'); 
 
 % plot population density along a path
 y = 1:stoCA_par.K; 

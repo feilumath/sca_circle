@@ -31,8 +31,9 @@ Xt_all = generateData(inferInfo,stoCA_par);   % Xt_all= cell(1,M): each cell is 
 local_p_all = all_local_density(Xt_all,stoCA_par); % cell: for each traj, (K,N,tN-1); 
 
 % Estimate the parameter by LSE, and LSE-stocMat: the two results are almost same
-% They works well: high probability events happens the most; They are not the MLE.  
-[lse_stoc,lse_all,Tmat_lse] = LSE_stocMat(local_p_all,Xt_all,stoCA_par,inferInfo);
+% They works well: high probability events happens the most; They are not the MLE. 
+lse_stocON = 1; % if 1: compute lse_stoc that estimates K-1 rows
+[lse_stoc,lse_all,Tmat_lse] = LSE_stocMat(local_p_all,Xt_all,stoCA_par,lse_stocON);
 Tmat_lse                       % LSE without using T is column-stochastic 
 lse_stoc                       % LSE of the only the first (K-1) rows
 Tmat_true = stoCA_par.TMat 

@@ -6,8 +6,8 @@ M = length(Xt_all); % Xt_all= cell(1,M): each cell is a trajectory of data: they
 K = stoCA.K; 
 local_p_all = cell(1,M); 
 Xt1_color   = cell(1,M);
-fprintf('\n Can use parallel to accelerate computation of local densities \n'); 
-for m=1:M
+% fprintf('\n Can use parallel to accelerate computation of local densities \n'); 
+parfor m=1:M
     local_p_all{m} = local_density1Traj(Xt_all{m},K,stoCA); 
 end
 

@@ -1,20 +1,18 @@
 % compute the transition probability matrix of the Markov chain
-close all; clear all; clc
+close all; clear all; % clc
 
 add_mypaths; 
 
 %% setttings
-settings_model;              % settings of the SCA model: N, K, graph, etc,  
-stoCA = stoCA_par; 
-
-% Example usage:
-N = 3; % Number of states
+N = 6; % Number of states
 K = 2; % Number of possible values for each state
-stoCA.N = N; 
-stoCA.K = K; 
+tN = 200; 
+nhbrSize = 3; 
+stoCA_par = settings_model(K,N,tN,nhbrSize);      % settings of the SCA model: N, K, graph, etc,  
+
 
 %% compute transition probability matrix P, and invariant measure pi
-[Pmat,states_all]  = trans_prob_Mat_markov(stoCA,K,N); 
+[Pmat,states_all]  = trans_prob_Mat_markov(stoCA_par,K,N); 
 
 % Display the states
 disp(states_all);
@@ -28,8 +26,7 @@ inv_pi = V(:,1)'/sum(V(:,1));     % A'*v = D11*v >>> v'*A' = D11*v';
 disp(inv_pi);
 
 %% test dependence on T: adding perturbations to T, and test changes in Pmat and pi
- [diff_Tmat,diff_Pmat]= dependence_on_T(stoCA,K,N); 
-
+ [diff_Tmat,diff_Pmat]= dependence_on_T(stoCA_par,K,N); 
 
 
 %%% ============ 
@@ -49,8 +46,10 @@ diff_Tmat = zeros(1,n_test);
 diff_Pmat = zeros(1,n_test);
 diff_pi   = zeros(1,n_test);
 for m=1:n_test
-    T_perturb   = randn(size(Tmat));
-    stoCA1.TMat = Tmat+T_perturb;
+    T_perturb   = rand(size(Tmat));                                        % to make it stochastic 
+    Tmat1 = Tmat+T_perturb;
+    Tmat1 = Tmat1*diag(1./sum(Tmat1));
+    stoCA1.TMat = Tmat1;
     Pmat1       = trans_prob_Mat_markov(stoCA1,K,N);
     [V1,~]  = eig(Pmat1'); 
     inv_pi1 = V1(:,1)'/sum(V1(:,1));   

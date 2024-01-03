@@ -1,7 +1,8 @@
 % settings of inference 
 
-M = 1000;    % number of trajectories 
-K = stoCA_par.K; 
+function inferInfo = settings_infer(M,K)
+% M = 1000;    % number of trajectories 
+% K = stoCA_par.K; 
 
 
 % initialize the optimization
@@ -29,3 +30,4 @@ inferInfo  = struct(...
    'dataType', 'synthetic'...    
    ); 
 
+end 

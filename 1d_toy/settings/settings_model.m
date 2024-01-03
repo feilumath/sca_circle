@@ -1,12 +1,12 @@
 
-
+function stoCA_par = settings_model(K,N,tN,nhbrSize)
 % settings of the stochastic cellular automata model
-K   = 2;           % size of the alphabet set
-tN  = 100;          % number of time steps
+% K   = 2;           % size of the alphabet set
+% tN  = 100;          % number of time steps
+% N   = 6;   
+% nhbrSize = 3;  % number of sites and neighbor size
+
 alphabet = 1:K; 
-N   = 3;   nhbrSize = 3;  % number of sites and neighbor size
-
-
 P0       = 1+ sin(2*(1:K));   % Initial distribution
 IC_distr = P0/sum(P0);       
 

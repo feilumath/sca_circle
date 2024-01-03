@@ -4,7 +4,7 @@ close all; clear all; % clc
 add_mypaths; 
 
 %% setttings
-N = 6; % Number of states
+N = 3; % Number of states
 K = 2; % Number of possible values for each state
 tN = 200; 
 nhbrSize = 3; 

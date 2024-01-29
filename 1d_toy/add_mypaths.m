@@ -10,7 +10,8 @@ addpath([parentpath '/settings/']);
 addpath([parentpath '/generateData/']);
 addpath([parentpath '/inference/']);
 addpath([parentpath '/plotsFn/']);
-addpath([parentpath '/output/']);
+% addpath([parentpath '/output/']);
+addpath([parentpath '/dependence/']);
 
 %% save data to your local DIR:  
 % making DIR to your root DIR

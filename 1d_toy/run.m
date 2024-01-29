@@ -7,8 +7,8 @@ clear all; close all; clc;
 add_mypaths; 
 
 %% setttings
-K   = 2;           % size of the alphabet set
-N   = 6;   
+K   = 6;           % size of the alphabet set
+N   = 16;   
 nhbrSize = 3;  % number of sites and neighbor size
 tN  = 100;          % number of time steps
 
@@ -60,7 +60,6 @@ norm(Tmat_lse- stoCA_par.TMat,'fro')
 
 %% test convergence for both estimators 
 test_convergence;  
-
 
 
 %% addition comments: 

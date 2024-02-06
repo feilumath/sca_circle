@@ -61,9 +61,15 @@ if ~exist(datafilename,'file')
     ratio_piT      = diff_pi_seq./diff_Tseq;
     mean_ratio_PT  = mean(ratio_PT,2);
     mean_ratio_piT = mean(ratio_piT,2);
+
+% 
+%    diff_l1.diff_Tmat_l1 = diff_Tmat1_l1; 
+% diff_l1.diff_Pmat_l1 = diff_Pmat1_l1; 
+% diff_l1.diff_pi_l1    = diff_pi_l1; 
+
     
     save(datafilename,'Nseq','mean_ratio_PT','mean_ratio_piT', "K","diff_pi_seq","diff_Tseq","diff_Pseq",'nsimu',...
-        'mean_ratio_PT_l1',"mean_ratio_piT_l1");
+        'mean_ratio_PT_l1',"mean_ratio_piT");
 end
 
 load(datafilename); 
@@ -74,7 +80,8 @@ semilogy(Nseq,mean_ratio_PT,'--x','linewidth',2); hold on
 semilogy(Nseq,mean_ratio_piT,'-.d','linewidth',2); 
 semilogy(Nseq,mean_ratio_piT(1)*K.^(-( Nseq-Nseq(1)) /2),':','linewidth',2);
 % legend('|P_1-P_2|_2/|T_1-T_2|_2','|\pi_1-\pi_2|_2/|T_1-T_2|_2','c_0 K^{-N/2}')
-legend('|\Delta P|_2 /  |\Delta T |_2','|\Delta \pi| _2/ |\Delta T|_2','c_0 K^{-N/2}')
+legend('|\Delta P|_2 /  ||Delta T\|_2','\|\Delta \pi\|_2/\|\Delta T\|_2','c_0 K^{-N/2}')
+
 xlabel(['N (with K=',sprintf('%i)',K)] );
 ylabel('Mean in 100 simulations');
 
@@ -82,9 +89,7 @@ subplot(1,2,2)
 semilogy(Nseq,mean_ratio_PT_l1,'--x','linewidth',2); hold on
 semilogy(Nseq,mean_ratio_piT_l1,'-.d','linewidth',2); 
 semilogy(Nseq,mean_ratio_piT_l1(1)*K.^(-( Nseq-Nseq(1)) /2),':','linewidth',2);
-% legend('|P_1-P_2|_1/|T_1-T_2|_1','|\pi_1-\pi_2|_1/|T_1-T_2|_1','c_0 K^{-N/2}')
-legend('|\Delta P|_1 /  |\Delta T |_1','|\Delta \pi| _1/ |\Delta T|_1','c_0 K^{-N/2}')
-
+legend('|P_1-P_2|_1/|T_1-T_2|_1','|\pi_1-\pi_2|_1/|T_1-T_2|_1','c_0 K^{-N/2}')
 xlabel(['N (with K=',sprintf('%i)',K)] );
 % ylabel('Mean in 100 simulations');
 

@@ -3,7 +3,6 @@ function [diff_Tmat1,diff_Pmat1,diff_pi1]=dependence_on_T(stoCA,K,N,nsimu,plotON
 % test dependence of P and inv_pi on T
 
 % nsimu = 100; 
-stoCA1 = stoCA; 
 Tmat   = stoCA.TMat; 
 Pmat   = trans_prob_Mat_markov(stoCA,K,N); 
 [V,~]  = eig(Pmat');
@@ -13,10 +12,11 @@ inv_pi = V(:,1)'/sum(V(:,1));
 diff_Tmat = zeros(1,nsimu);
 diff_Pmat = zeros(1,nsimu);
 diff_pi   = zeros(1,nsimu);
-for m=1:nsimu
+parfor m=1:nsimu
     T_perturb   = rand(size(Tmat));                                        % to make it stochastic 
     Tmat1 = Tmat+T_perturb;
     Tmat1 = Tmat1*diag(1./sum(Tmat1));
+    stoCA1 = stoCA; 
     stoCA1.TMat = Tmat1;
     Pmat1       = trans_prob_Mat_markov(stoCA1,K,N);
     [V1,~]  = eig(Pmat1'); 

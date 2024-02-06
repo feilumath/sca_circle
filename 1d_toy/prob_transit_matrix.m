@@ -28,14 +28,15 @@ end
 %% test dependence on T: adding perturbations to T, and test changes in Pmat and pi
 nsimu  = 100; 
 plotON = 1; 
-[diff_Tmat,diff_Pmat,diff_pi,diff_l1]= dependence_on_T(stoCA_par,K,N,nsimu,plotON); 
-
+randT  = 0;    % when randT =1, the eigenvector-based pi may have machine precision error.
+[diff_Tmat,diff_Pmat,diff_pi,diff_l1]= dependence_on_T(stoCA_par,K,N,nsimu,plotON,randT); 
+close all; 
 
 %% a sequence of N: 
 % Nseq = 3:9; K    = 2; 
  Nseq = 3:7; K    = 3; 
 
-datafilename = [SAVE_DIR,'dependence_on_T_varyN_K',sprintf('%i',K),'_l1.mat'];
+datafilename = [SAVE_DIR,'dependence_on_T_varyN_K',sprintf('%i_l1_randT%i.mat',K,randT)];
 if ~exist(datafilename,'file')
     n_Nseq      = length(Nseq);
     diff_Tseq   = zeros(n_Nseq,nsimu);
@@ -49,7 +50,7 @@ if ~exist(datafilename,'file')
         N  = Nseq(nn);
         nhbrSize = min(3,floor(N/2));  %% in both left and right;   neighbor size = 2*nhbrSize+1;
         stoCA_par = settings_model(K,N,tN,nhbrSize);      % settings of the SCA model: N, K, graph, etc,
-        [diff_Tseq(nn,:),diff_Pseq(nn,:),diff_pi_seq(nn,:),diff_l1]= dependence_on_T(stoCA_par,K,N,nsimu,0);
+        [diff_Tseq(nn,:),diff_Pseq(nn,:),diff_pi_seq(nn,:),diff_l1]= dependence_on_T(stoCA_par,K,N,nsimu,0,randT);
 
         ratio_PT_l1       = diff_l1.diff_Pmat_l1./diff_l1.diff_Tmat_l1;
         ratio_piT_l1      = diff_l1.diff_pi_l1./diff_l1.diff_Tmat_l1;
@@ -73,8 +74,10 @@ subplot(1,2,1)
 semilogy(Nseq,mean_ratio_PT,'--x','linewidth',2); hold on
 semilogy(Nseq,mean_ratio_piT,'-.d','linewidth',2); 
 semilogy(Nseq,mean_ratio_piT(1)*K.^(-( Nseq-Nseq(1)) /2),':','linewidth',2);
+semilogy(Nseq,mean_ratio_PT_l1(1)*K.^(( Nseq-Nseq(1))),':','linewidth',2);
 % legend('|P_1-P_2|_2/|T_1-T_2|_2','|\pi_1-\pi_2|_2/|T_1-T_2|_2','c_0 K^{-N/2}')
-legend('|\Delta P|_2 /  |\Delta T |_2','|\Delta \pi| _2/ |\Delta T|_2','c_0 K^{-N/2}')
+legend('|\Delta P|_2 /  |\Delta T |_2','|\Delta \pi| _2/ |\Delta T|_2','c_0 K^{-N/2}','');
+legend('location','best')
 xlabel(['N (with K=',sprintf('%i)',K)] );
 ylabel('Mean in 100 simulations');
 
@@ -82,14 +85,14 @@ subplot(1,2,2)
 semilogy(Nseq,mean_ratio_PT_l1,'--x','linewidth',2); hold on
 semilogy(Nseq,mean_ratio_piT_l1,'-.d','linewidth',2); 
 semilogy(Nseq,mean_ratio_piT_l1(1)*K.^(-( Nseq-Nseq(1)) /2),':','linewidth',2);
-% legend('|P_1-P_2|_1/|T_1-T_2|_1','|\pi_1-\pi_2|_1/|T_1-T_2|_1','c_0 K^{-N/2}')
-legend('|\Delta P|_1 /  |\Delta T |_1','|\Delta \pi| _1/ |\Delta T|_1','c_0 K^{-N/2}')
-
+semilogy(Nseq,mean_ratio_PT_l1(1)*K.^(( Nseq-Nseq(1))),':','linewidth',2);
+legend('|\Delta P|_1 /  |\Delta T |_1','|\Delta \pi| _1/ |\Delta T|_1','','c_0 K^{N}')
+legend('location','best'); % legend('boxoff')
 xlabel(['N (with K=',sprintf('%i)',K)] );
 % ylabel('Mean in 100 simulations');
 
 
-figname = [SAVE_DIR,'mean_ratio_varyN_K',sprintf('%i_l1',K)];
+figname = [SAVE_DIR,'mean_ratio_varyN_K',sprintf('%i_l1_randT%i',K,randT)];
 set_positionFontsAll;
 
 

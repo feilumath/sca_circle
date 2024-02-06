@@ -28,13 +28,14 @@ end
 %% test dependence on T: adding perturbations to T, and test changes in Pmat and pi
 nsimu  = 100; 
 plotON = 1; 
-randT  = 0;    % when randT =1, the eigenvector-based pi may have machine precision error.
+randT  = 1;    % when randT =1, the eigenvector-based pi may have machine precision error.
 [diff_Tmat,diff_Pmat,diff_pi,diff_l1]= dependence_on_T(stoCA_par,K,N,nsimu,plotON,randT); 
 close all; 
 
 %% a sequence of N: 
-% Nseq = 3:9; K    = 2; 
+ Nseq = 3:9; K    = 2; 
  Nseq = 3:7; K    = 3; 
+%Nseq = 3:6; K    = 4; 
 
 datafilename = [SAVE_DIR,'dependence_on_T_varyN_K',sprintf('%i_l1_randT%i.mat',K,randT)];
 if ~exist(datafilename,'file')

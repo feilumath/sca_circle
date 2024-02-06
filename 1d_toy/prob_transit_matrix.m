@@ -44,7 +44,7 @@ if ~exist(datafilename,'file')
 
 
     mean_ratio_PT_l1  = zeros(n_Nseq,1);
-    mean_ratio_piT_l1 = zeros(n_Nseq,1); _
+    mean_ratio_piT_l1 = zeros(n_Nseq,1);
     for nn= 1:n_Nseq
         N  = Nseq(nn);
         nhbrSize = min(3,floor(N/2));  %% in both left and right;   neighbor size = 2*nhbrSize+1;

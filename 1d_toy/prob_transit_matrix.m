@@ -28,16 +28,19 @@ end
 %% test dependence on T: adding perturbations to T, and test changes in Pmat and pi
 nsimu  = 100; 
 plotON = 1; 
-randT  = 1;    % when randT =1, the eigenvector-based pi may have machine precision error.
+randT  = 0;    % when randT =1, the eigenvector-based pi may have machine precision error.
+
+Tmat_special = [0,1,0; 0,0,1; 1/3,1/3,1/3];
+stoCA_par.TMat =  Tmat_special'; 
 [diff_Tmat,diff_Pmat,diff_pi,diff_l1]= dependence_on_T(stoCA_par,K,N,nsimu,plotON,randT); 
-close all; 
+
 
 %% a sequence of N: 
  Nseq = 3:9; K    = 2; 
  Nseq = 3:7; K    = 3; 
 %Nseq = 3:6; K    = 4; 
-
-datafilename = [SAVE_DIR,'dependence_on_T_varyN_K',sprintf('%i_l1_randT%i.mat',K,randT)];
+close all; 
+datafilename = [SAVE_DIR,'dependence_on_T_varyN_K',sprintf('%i_l1_randT%i_special.mat',K,randT)];
 if ~exist(datafilename,'file')
     n_Nseq      = length(Nseq);
     diff_Tseq   = zeros(n_Nseq,nsimu);
@@ -51,6 +54,7 @@ if ~exist(datafilename,'file')
         N  = Nseq(nn);
         nhbrSize = min(3,floor(N/2));  %% in both left and right;   neighbor size = 2*nhbrSize+1;
         stoCA_par = settings_model(K,N,tN,nhbrSize);      % settings of the SCA model: N, K, graph, etc,
+        stoCA_par.TMat =  Tmat_special'; 
         [diff_Tseq(nn,:),diff_Pseq(nn,:),diff_pi_seq(nn,:),diff_l1]= dependence_on_T(stoCA_par,K,N,nsimu,0,randT);
 
         ratio_PT_l1       = diff_l1.diff_Pmat_l1./diff_l1.diff_Tmat_l1;
@@ -93,7 +97,7 @@ xlabel(['N (with K=',sprintf('%i)',K)] );
 % ylabel('Mean in 100 simulations');
 
 
-figname = [SAVE_DIR,'mean_ratio_varyN_K',sprintf('%i_l1_randT%i',K,randT)];
+figname = [SAVE_DIR,'mean_ratio_varyN_K',sprintf('%i_l1_randT%i_special',K,randT)];
 set_positionFontsAll;
 
 

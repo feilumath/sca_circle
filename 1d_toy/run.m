@@ -7,8 +7,8 @@ clear all; close all; clc;
 add_mypaths; 
 
 %% setttings
-K   = 6;           % size of the alphabet set
-N   = 16;   
+K   = 2;           % size of the alphabet set
+N   = 6;   
 nhbrSize = 3;  % number of sites and neighbor size
 tN  = 100;          % number of time steps
 

@@ -3,7 +3,7 @@ function test_ergodicity(stoCA_par)
 % test ergodicity by running the system for a large time. 
 
 % run a long path
-stoCA_par.tN = 1e3; 
+stoCA_par.tN = 1e4; 
 Xt = stoCA_model(stoCA_par);
 tN = stoCA_par.tN; 
 tInd = 1:ceil(tN/10):tN; 

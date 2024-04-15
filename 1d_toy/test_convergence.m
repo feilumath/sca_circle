@@ -2,7 +2,7 @@
 
 
 Mseq  = 10.^(0:5);
-nsimu = 100;
+nsimu = 10;
 
 
 N =6; K=2; 
@@ -90,31 +90,35 @@ if  ~exist(estFilename,'file')
 
         inferInfo.M = 1*Mseq(end);
         tic 
-        for n= 1:nsimu
+   
+        parfor n= 1:nsimu     % par for 
             TMat = rand(K,K);  TMat = TMat*diag(1./sum(TMat)); % Column sum is 1.
-            stoCA_par.TMat = TMat;
+            stoCA_par1      = stoCA_par;
+            stoCA_par1.TMat = TMat;
             % generate/load data: all data
-            Xt_all      = generateData(inferInfo,stoCA_par);        % Xt_all= cell(1,M): each cell is a trajectory of data
-            local_p_all = all_local_density(Xt_all,stoCA_par); % cell(1,M): for each traj, (K,N,tN-1);
+            Xt_all      = generateData(inferInfo,stoCA_par1);        % Xt_all= cell(1,M): each cell is a trajectory of data
+            local_p_all = all_local_density(Xt_all,stoCA_par1); % cell(1,M): for each traj, (K,N,tN-1);
             lse_stocON  = 0; % if 1: compute lse_stoc that estimates K-1 rows
 
-
+           
             % LSE-traj
             fprintf('\n LSE-trajectory %i\n',n);
             tic 
-            M_index = 1:inferInfo.M; % randperm(inferInfo.M);
+            tempLSE = zero(n_Mseq,1); 
+            % M_index = 1:inferInfo.M; % randperm(inferInfo.M);
             for i=1:n_Mseq
                 M = Mseq(i);
-                data_indx        = M_index(1:M);
-                [~,~,Tmat_lse]   = LSE_stocMat(local_p_all(data_indx),Xt_all(data_indx),stoCA_par,lse_stocON);
+                data_indx        = 1:M;
+                [~,~,Tmat_lse]   = LSE_stocMat(local_p_all(data_indx),Xt_all(data_indx),stoCA_par1,lse_stocON);
                 lse_seq(:,:,i,n) = Tmat_lse;
-                errLSE_seq(i,n)  = norm(Tmat_lse - stoCA_par.TMat,'fro');
+                tempLSE(i) = norm(Tmat_lse - stoCA_par1.TMat,'fro');
             end
-            errLSE_seq = errLSE_seq/norm(stoCA_par.TMat,'fro');
+            errLSE_seq(:,n)= tempLSE/norm(stoCA_par1.TMat,'fro'); 
 
             % Ensemble-LSE 
             fprintf('\n Ensemble-LSE \n');
             M_index = 1:inferInfo.M; % randperm(inferInfo.M);
+            tempLSE_ens = zero(n_Mseq,1); 
             for i=1:n_Mseq
                 M             = Mseq(i);
                 data_indx     = M_index(1:M);
@@ -122,10 +126,11 @@ if  ~exist(estFilename,'file')
                 local_p_all_M = data_pt2pm(local_p_all(data_indx));    % data local_p_all_M = cell(1,tN);
                 [Tmat_lse,~]  = infer_from_sitesPDF(Xm_all,local_p_all_M,K);  %
                 lse_seq_EnsD(:,:,i,n) = Tmat_lse;
-                errLSE_seq_EnsD(i,n)  = norm(Tmat_lse - stoCA_par.TMat,'fro');
+                tempLSE_ens(i)  = norm(Tmat_lse - stoCA_par1.TMat,'fro');
             end
-            errLSE_seq_EnsD = errLSE_seq_EnsD/norm(stoCA_par.TMat,'fro');
-        end
+            errLSE_seq_EnsD(:,n) = tempLSE_ens/norm(stoCA_par1.TMat,'fro');
+        end      
+
        estTime.LSE_all = toc;
        save(estFilename,"estTime","errLSE_seq","stoCA_par","Mseq","inferInfo","errLSE_seq_EnsD","lse_seq_EnsD");
     end

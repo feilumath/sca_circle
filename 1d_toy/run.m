@@ -6,6 +6,10 @@
 clear all; close all; clc; 
 add_mypaths; 
 
+testErgodicityON = 1; 
+
+est_predict_synchr = 1;  
+
 %% setttings
 K   = 2;           % size of the alphabet set
 N   = 6;   
@@ -23,13 +27,17 @@ imagesc(Xt(:,tInd)); xlabel('Time'); ylabel('Sites');
 
 
 %% test empirical distribution, ergodicity, and Consensus/clustering
-test_ergodicity(stoCA_par);   % path average converges fast. Ergodic? Consensus?
+if testErgodicityON
+    test_ergodicity(stoCA_par);   % path average converges fast. Ergodic? Consensus?
+end
 
 
 
-%% Inference-- part I: multiple trajectory data
+%% Inference-- 
+% % part I: multiple trajectory data
 M  = 1e4; 
 inferInfo = settings_infer(M,K); 
+
 % generate/load data: the data size may be large, to make it efficient later 
 Xt_all = generateData(inferInfo,stoCA_par);   % Xt_all= cell(1,M): each cell is a trajectory of data 
 
@@ -45,7 +53,7 @@ lse_stoc                       % LSE of the only the first (K-1) rows
 Tmat_true = stoCA_par.TMat 
 norm(Tmat_lse- stoCA_par.TMat,'fro')
 
-%% Inference-- part II:  ensemble data without trajectory information: use maximal likely local densities 
+% Inference-- part II:  ensemble data without trajectory information: use maximal likely local densities 
 % function infer_Ensemble_noTraj(local_p_all,Xt_all,stoCA_par,inferInfo)
 % estimate Tmat when data are ensemble without trajectory information
 % Idea: match the marginal density of each site. Need large ensemble size
@@ -53,14 +61,17 @@ norm(Tmat_lse- stoCA_par.TMat,'fro')
 Xm_all        = data_Xt2Xm(Xt_all);         % data Xt_all = cell(1,tN); each time can has M(t) samples
 local_p_all_M = data_pt2pm(local_p_all);    % data local_p_all_M = cell(1,tN); 
 
-[Tmat_lse,lse] = infer_from_sitesPDF(Xm_all,local_p_all_M,stoCA_par.K);  % 
+[Tmat_lse,lse_struct] = infer_from_sitesPDF(Xm_all,local_p_all_M,stoCA_par.K);  % 
 norm(Tmat_lse- stoCA_par.TMat,'fro')
 
 
 
-%% test convergence for both estimators 
+%% test convergence for both estimators as Sample size increases
 test_convergence;  
 
+
+%% Inference-Predict synchronization
+infer_predict_synchr; 
 
 %% addition comments: 
 %{

@@ -4,15 +4,7 @@
 % clear all; close all; clc; 
 add_mypaths; 
 
-% Define a custom colormap (e.g., RGB triplets for red, green, and blue)
-% Colors: Red, Green, Blue
-myColormap2 = [255 0 0;   % Red, values between 0 and 1
-              255,255,0; % Yellow, % 46,139,87;   % sea green 
-              0,128,0]/255; % Green            % 30,144,255]/255;  % dodger blue
 
-myColormap = [173,216,230;   % Red, values between 0 and 1
-              255,255,0; % Yellow, % 46,139,87;   % sea green 
-              0,206,209]/255; % Green            % 30,144,255]/255;  % dodger blue
 
 % setttings
 K   = 3;             % size of the alphabet set
@@ -28,7 +20,7 @@ str_name = sprintf('N%i_K%i',N,K);
 
 %% T periodic: permutation >>> synchronization 
 Tmat = eye(K); 
-Tmat = [Tmat(2:K,:); Tmat(1,:)]; 
+Tmat = [Tmat(2:K,:); Tmat(1,:)];  
 % TMat = TMat*diag(1./sum(TMat)); % Column sum is 1. 
 stoCA_par.TMat = Tmat; 
 
@@ -38,8 +30,7 @@ tN =  stoCA_par.tN; gap  = ceil(tN/100);
 tInd = 1:gap:K*6;
 figure; 
 imagesc(Xt(:,tInd)); xlabel('Time'); ylabel('Sites');
-colormap("parula"); default
-% colormap(myColormap);
+% colormap("parula"); % default
 
 figname = [figpath0,'Example_synchronization',str_name];
 set_positionFontsAll;
@@ -87,3 +78,17 @@ str_name = sprintf('N%i_K%i',N,K);
 figname = [figpath0,'Example_synchro_clusters',str_name];
 set_positionFontsAll;
 eig(Tmat)
+
+
+%{
+% colormap(myColormap);
+% Define a custom colormap (e.g., RGB triplets for red, green, and blue)
+% Colors: Red, Green, Blue
+myColormap2 = [255 0 0;   % Red, values between 0 and 1
+              255,255,0; % Yellow, % 46,139,87;   % sea green 
+              0,128,0]/255; % Green            % 30,144,255]/255;  % dodger blue
+
+myColormap = [173,216,230;   % Red, values between 0 and 1
+              255,255,0; % Yellow, % 46,139,87;   % sea green 
+              0,206,209]/255; % Green            % 30,144,255]/255;  % dodger blue
+%}

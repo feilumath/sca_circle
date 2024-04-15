@@ -1,5 +1,7 @@
 function [lse_stoc,lse_all,Tmat_lse] = LSE_stocMat(local_p_all,Xt_all,stoCA_par,lse_stocON)
-% Estimate the tranform stochastic matrix by LSE: only the first (K-1) row
+% Estimate the tranform stochastic matrix by LSE: 
+% Tmat_lse                       % LSE without using T is column-stochastic 
+% lse_stoc                       % LSE of the only the first (K-1) rows
 % of the matrix as free parameter 
 %  Abar = B otimes Amat; 
 %  bbar (k) = sum  (1+ c^k - c^K) phi
@@ -47,7 +49,13 @@ parfor m = 1:M
     bbar = bbar + bbar1traj;
 end
 
-Tmat_lse  = Amat\bvec; 
+% Tmat_lse  = Amat\bvec; 
+% % %% use non-negative constraint
+ Tmat_lse = zeros(K,K);
+ for k=1:K
+      Tmat_lse(:,k)  = lsqnonneg(Amat,bvec(:,k)); % have to estimate 
+ end
+
 % lb = 0; ub = 1;  Tmat_lse =  lsqlin(Amat,bvec,[],[],[],[],lb,ub); 
 % lse.cvec = Tmat_lse;
 % lse.Amat = Amat; 

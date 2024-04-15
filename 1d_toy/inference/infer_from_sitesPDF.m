@@ -1,5 +1,5 @@
 
-function [Tmat_lse,lse] = infer_from_sitesPDF(Xm_all,local_p_all_M,K)
+function [Tmat_lse,lse_struct] = infer_from_sitesPDF(Xm_all,local_p_all_M,K)
 % % estimate Tmat when data are ensemble without trajectory information
 % Idea: match the marginal density of each site. Need large ensemble size
 % fprintf('\n Estimator from ensemble data without trajectory information\n');
@@ -23,10 +23,16 @@ for t = 1:tN-1
     Amat = Amat +  Amat1t; 
     bvec = bvec + bvec1t;
 end
-lse.cvec = Amat\bvec;
-lse.Amat = Amat; 
-lse.bvec = bvec; 
-Tmat_lse = lse.cvec';  
+
+lse_nonneg =zeros(K,K); 
+for k=1:K
+     lse_nonneg(:,k)  = lsqnonneg(Amat,bvec(:,k)); % have to estimate 
+end
+
+lse_struct.cvec = lse_nonneg; %  Amat\bvec;
+lse_struct.Amat = Amat; 
+lse_struct.bvec = bvec; 
+Tmat_lse = lse_struct.cvec';  
 
 
 

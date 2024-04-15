@@ -18,9 +18,7 @@ siteInd_ext = [N-nhbrSize+1:N,1:N,1:nhbrSize];                     % cyclic site
 Ind_nhbr_k  = @(k)siteInd_ext( (-nhbrSize:nhbrSize)+k + nhbrSize); % index of neighborhood of site k
 
 
-figure; 
-imagesc(TMat); colorbar; 
-title('Transformation matrix T KxK')
+% figure; imagesc(TMat); colorbar;  title('Transformation matrix T KxK')
 
 %% all parameters
 stoCA_par = struct(...

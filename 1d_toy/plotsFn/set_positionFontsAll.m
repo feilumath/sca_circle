@@ -18,7 +18,7 @@ Ncols = numel(unique(pos1));
 Nrows = numel(unique(pos2));
 
 %% set figure size
-% width = 500+300*(Ncols-1); height = 400+200*(Nrows-1); 
+ width = 500+300*(Ncols-1); height = 400+200*(Nrows-1); 
 % set(gcf, 'Position',  [100, 1000, width, height]);    % set figure position + size [x , x, width height]
  tightfig;
 if exist('figpath', 'var') && exist('figname', 'var')

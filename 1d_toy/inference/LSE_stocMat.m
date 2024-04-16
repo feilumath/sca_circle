@@ -22,7 +22,7 @@ parfor m = 1:M
           
     bbar1traj = zeros( (K-1)*K,1);  
     
-    phi1traj  = local_p_all{m}; 
+    phi1traj  = local_p_all{m};             % phi1traj    size = (K,N,tN);  % % phi1traj(:,1,1) in paper is  1 x K 
     Xt        = Xt_all{m};  % Xt size = [N,tN] 
     [K1,~,tN] = size(phi1traj); 
     if K1 ~= K; fprintf('\n local_p_all size miss match\n'); end
@@ -33,11 +33,11 @@ parfor m = 1:M
         for n= 1:N
             indicator(n,Xt1(n)) = 1; 
         end 
-        Tmat_lse = phi1traj(:,:,t);   % KxN
-        Amat1traj = Amat1traj+ Tmat_lse*Tmat_lse'; 
-        bvec1traj = bvec1traj+ Tmat_lse*indicator;  
+        phi1 = phi1traj(:,:,t);   % KxN    % Note: phi1's size is not as in paper (1 x K). But good here for A, b below  
+        Amat1traj = Amat1traj+ phi1*phi1';    
+        bvec1traj = bvec1traj+ phi1*indicator;  
         
-        temp_bar  = Tmat_lse*(indicator(:,1:(K-1))+1- indicator(:,K)); 
+        temp_bar  = phi1*(indicator(:,1:(K-1))+1- indicator(:,K)); 
         bbar1traj = bbar1traj + reshape(temp_bar,[],1); 
     end
     lse_all{m}.Amat = Amat1traj; 
@@ -55,12 +55,15 @@ end
  for k=1:K
       Tmat_lse(:,k)  = lsqnonneg(Amat,bvec(:,k)); % have to estimate 
  end
+ Tmat_lse = diag(1./sum(Tmat_lse,2))*Tmat_lse;
+% Tmat_lse = Tmat_lse';   % updated 2024.4.16: consistent with paper
+
+
 
 % lb = 0; ub = 1;  Tmat_lse =  lsqlin(Amat,bvec,[],[],[],[],lb,ub); 
 % lse.cvec = Tmat_lse;
 % lse.Amat = Amat; 
 % lse.bvec = bvec; 
-Tmat_lse = Tmat_lse'; 
 
 
 
@@ -70,7 +73,7 @@ if lse_stocON ==1
     Abar = kron(B,Amat); lb = zeros(K*(K-1),1); ub = 1+lb;
     lse_stoc = lsqlin(Abar,bbar,[],[],[],[],lb,ub); %  Abar\bbar;
     lse_stoc = reshape(lse_stoc,[K,K-1]);
-    lse_stoc = [lse_stoc, 1-sum(lse_stoc,2)];
+    lse_stoc = abs([lse_stoc, 1-sum(lse_stoc,2)]);
     lse_stoc = lse_stoc';
 else
     lse_stoc =[]; 

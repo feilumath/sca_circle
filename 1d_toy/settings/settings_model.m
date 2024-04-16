@@ -11,14 +11,16 @@ P0       = 1+ sin(2*(1:K));   % Initial distribution
 IC_distr = P0/sum(P0);       
 
 %% transform matrix (to be learned from data)
-TMat = rand(K,K);  TMat = TMat*diag(1./sum(TMat)); % Column sum is 1. 
+TMat = rand(K,K);  
+% % TMat = TMat*diag(1./sum(TMat)); % Column sum is 1. 
+TMat = diag(1./sum(TMat,2))*TMat; % row sum is 1.- --- stochastic matrix, % updated 2024.4.16: consistent with paper
 
 % neighborhood of site k 
 siteInd_ext = [N-nhbrSize+1:N,1:N,1:nhbrSize];                     % cyclic site indices --- on a circle
 Ind_nhbr_k  = @(k)siteInd_ext( (-nhbrSize:nhbrSize)+k + nhbrSize); % index of neighborhood of site k
 
 
-% figure; imagesc(TMat); colorbar;  title('Transformation matrix T KxK')
+% figure; imagesc(TMat); colorbar;  title('Transformation matrix T KxK ')
 
 %% all parameters
 stoCA_par = struct(...

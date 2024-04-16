@@ -5,7 +5,7 @@ tN   = length(Xt(1,:));
 
 edges = stoCA.edges; 
 
-Xt_distr = zeros(stoCA.K,tN);
+Xt_distr = zeros(stoCA.K,tN); 
 for t=1:tN
     Xt_distr(:,t) = histcounts(Xt(:,t),edges);
 end

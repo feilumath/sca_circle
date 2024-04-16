@@ -22,7 +22,7 @@ str_name = sprintf('N%i_K%i',N,K);
 %% T periodic: permutation >>> synchronization 
 Tmat = eye(K); 
 Tmat = [Tmat(2:K,:); Tmat(1,:)];  
-% TMat = TMat*diag(1./sum(TMat)); % Column sum is 1. 
+Tmat = diag(1./sum(Tmat,2))*Tmat; % row sum is 1. 
 stoCA_par.TMat = Tmat; 
 
 
@@ -32,14 +32,13 @@ Xt_true = stoCA_model(stoCA_par,X0);
 tN =  stoCA_par.tN; gap  = ceil(tN/100); 
 tInd = 1:gap:K*6;
 figure(100); 
-subplot(131); 
-imagesc(Xt_true(:,tInd)); xlabel('Time'); ylabel('Sites');
+subplot(131); imagesc(tInd,1:N, Xt_true(:,tInd)); xlabel('Time'); ylabel('Sites');
 % colormap("parula"); % default
 
 
 %% Estimator
 % part I: multiple trajectory data
-M  = 1e4; 
+M  = 1e2; 
 inferInfo = settings_infer(M,K); 
 
 % generate/load data: the data size may be large, to make it efficient later 
@@ -63,8 +62,11 @@ norm(Tmat_lse_Ens- stoCA_par.TMat,'fro')
 
 
 
-%% prediction 
+%% predict synchronization
 stoCA_par_LSE = stoCA_par; 
+
+% TMat = TMat*diag(1./sum(TMat)); % Column sum is 1. 
+
 stoCA_par_LSE.TMat = Tmat_lse; 
 Xt_lse = stoCA_model(stoCA_par_LSE,X0); 
 
@@ -73,17 +75,23 @@ stoCA_par_lse_Ens = stoCA_par;
 stoCA_par_lse_Ens.TMat = Tmat_lse_Ens; 
 Xt_lse_Ens= stoCA_model(stoCA_par_lse_Ens,X0); 
 
-figure(100)
-
-subplot(132);  imagesc(Xt_lse(:,tInd)); xlabel('Time'); ylabel('Sites');
-subplot(133);  imagesc(Xt_lse_Ens(:,tInd)); xlabel('Time'); ylabel('Sites');
-
-
-%% 
-% figname = [figpath0,'Example_synchronization',str_name];
-% set_positionFontsAll;
+figure(100); clf
+subplot(131); imagesc(Xt_true(:,tInd)); xlabel('Time'); title('True'); ylabel('Sites');
+subplot(132);  imagesc(Xt_lse(:,tInd)); xlabel('Time'); title('LSE-trajectory') % ylabel('Sites');
+subplot(133);  imagesc(Xt_lse_Ens(:,tInd)); xlabel('Time'); title('LSE-ensemble') % ylabel('Sites');
 
 
+figname = [figpath0,'predict_synchronization',str_name];
+set_positionFontsAll;
+
+% for latex 
+lse1 = Tmat_lse; 
+fprintf('\n LSE-traj = %2.4f & %2.4f & %2.4f \\  %2.4f & %2.4f & %2.4f \\  %2.4f & %2.4f & %2.4f \n', ...
+       lse1(1,1), lse1(1,2), lse1(1,3), lse1(2,1),lse1(2,2), lse1(2,3), lse1(3,1),lse1(3,2), lse1(3,3) );
+
+lse1 = Tmat_lse_Ens; 
+fprintf('\n LSE-ensemble = %2.4f & %2.4f & %2.4f \\  %2.4f & %2.4f & %2.4f \\  %2.4f & %2.4f & %2.4f \n', ...
+       lse1(1,1), lse1(1,2), lse1(1,3), lse1(2,1),lse1(2,2), lse1(2,3), lse1(3,1),lse1(3,2), lse1(3,3) );
 
 
 

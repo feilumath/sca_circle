@@ -1,13 +1,13 @@
 %% test convergence of the estimator -- trajectory data
 
+add_mypaths; 
+
 
 Mseq  = 10.^(0:5);
-nsimu = 10;
-
+nsimu = 100;
 
 N =6; K=2; 
-randomT = 1; % random T in nsimu simulations ---- longer time in generating data. 
-
+randomT = 0; % random T in nsimu simulations ---- longer time in generating data. 
 
 %% setup
 if ~exist([SAVE_DIR,'figures/'],'dir'), mkdir([SAVE_DIR,'figures/']); end
@@ -17,10 +17,11 @@ estFilename =  [SAVE_DIR,'data_convTest_',str_name,'.mat'];
 
 n_Mseq     = length(Mseq);
 
+tN  = 100;          % number of time steps
+nhbrSize = 3;  % number of sites and neighbor size
 
 stoCA_par   = settings_model(K,N,tN,nhbrSize);
 inferInfo.M = 5*Mseq(end);
-
 
 if  ~exist(estFilename,'file')
 
@@ -30,7 +31,6 @@ if  ~exist(estFilename,'file')
         % generate/load data: all data
         Xt_all = generateData(inferInfo,stoCA_par);   % Xt_all= cell(1,M): each cell is a trajectory of data
         estTime.generateData = toc;
-
 
         % Assemble data to local population density phi(X_i,V_i)(t) \in \R^K. It is what needed for Tmat esitmation (LSE or MLE)
         tic
@@ -57,7 +57,7 @@ if  ~exist(estFilename,'file')
         end
 
         estTime.LSE = toc;
-        save(estFilename,"estTime","errLSE_seq","stoCA_par","Mseq","inferInfo");
+        save(estFilename,"estTime","errLSE_seq",'lse_seq',"stoCA_par","Mseq","inferInfo");
 
 
         %% Part 2: LSE without using trajectory information
@@ -73,7 +73,7 @@ if  ~exist(estFilename,'file')
                 data_indx = M_index(1:M);
                 Xm_all        = data_Xt2Xm(Xt_all(data_indx));         % data Xt_all = cell(1,tN); each time can has M(t) samples
                 local_p_all_M = data_pt2pm(local_p_all(data_indx));    % data local_p_all_M = cell(1,tN);
-                [Tmat_lse,~] = infer_from_sitesPDF(Xm_all,local_p_all_M,K);  %
+                [Tmat_lse,~]  = infer_from_sitesPDF(Xm_all,local_p_all_M,K);  %
                 lse_seq_EnsD(:,:,i,n) = Tmat_lse;
                 errLSE_seq_EnsD(i,n)  = norm(Tmat_lse - stoCA_par.TMat,'fro');
             end
@@ -92,7 +92,7 @@ if  ~exist(estFilename,'file')
         tic 
    
         parfor n= 1:nsimu     % par for 
-            TMat = rand(K,K);  TMat = TMat*diag(1./sum(TMat)); % Column sum is 1.
+            TMat = rand(K,K);  TMat = diag(1./sum(TMat,2))*TMat; % Column sum is 1.
             stoCA_par1      = stoCA_par;
             stoCA_par1.TMat = TMat;
             % generate/load data: all data
@@ -100,11 +100,11 @@ if  ~exist(estFilename,'file')
             local_p_all = all_local_density(Xt_all,stoCA_par1); % cell(1,M): for each traj, (K,N,tN-1);
             lse_stocON  = 0; % if 1: compute lse_stoc that estimates K-1 rows
 
-           
+
             % LSE-traj
             fprintf('\n LSE-trajectory %i\n',n);
             tic 
-            tempLSE = zero(n_Mseq,1); 
+            tempLSE = zeros(n_Mseq,1); 
             % M_index = 1:inferInfo.M; % randperm(inferInfo.M);
             for i=1:n_Mseq
                 M = Mseq(i);
@@ -118,7 +118,7 @@ if  ~exist(estFilename,'file')
             % Ensemble-LSE 
             fprintf('\n Ensemble-LSE \n');
             M_index = 1:inferInfo.M; % randperm(inferInfo.M);
-            tempLSE_ens = zero(n_Mseq,1); 
+            tempLSE_ens = zeros(n_Mseq,1); 
             for i=1:n_Mseq
                 M             = Mseq(i);
                 data_indx     = M_index(1:M);
@@ -131,8 +131,8 @@ if  ~exist(estFilename,'file')
             errLSE_seq_EnsD(:,n) = tempLSE_ens/norm(stoCA_par1.TMat,'fro');
         end      
 
-       estTime.LSE_all = toc;
-       save(estFilename,"estTime","errLSE_seq","stoCA_par","Mseq","inferInfo","errLSE_seq_EnsD","lse_seq_EnsD");
+       estTime = toc;
+       save(estFilename,"estTime","errLSE_seq","stoCA_par","Mseq","inferInfo","errLSE_seq_EnsD",'lse_seq',"lse_seq_EnsD");
     end
 end
 

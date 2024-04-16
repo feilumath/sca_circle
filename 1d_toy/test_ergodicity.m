@@ -10,8 +10,9 @@ tInd = 1:ceil(tN/10):tN;
 Xt_distr = Xt_populationDensity(Xt(:,tInd),stoCA_par); 
 
 % %% test if population density satisfies D(t+1) = Tmat* D(t); 
-TT = stoCA_par.TMat; XX = Xt_distr(:,1:10); YY = TT*XX; 
-fprintf('\n Population density D(t): D(t+1) - Tmat* D(t):\n');
+TT = stoCA_par.TMat; XX = Xt_distr(:,1:10);
+YY = TT*XX;          % updated 2024.4.16: consistent with paper
+fprintf('\n Population density D(t): D(t+1) - Tmat*D(t):\n');
 disp(XX(:,2:end)-YY(:,1:end-1));
 
 % plot path-average

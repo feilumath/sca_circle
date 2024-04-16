@@ -6,7 +6,9 @@ function inferInfo = settings_infer(M,K)
 
 
 % initialize the optimization
-T_mat   = rand(K,K);  T_mat = T_mat*diag(1./sum(T_mat)); 
+T_mat   = rand(K,K);  
+% T_mat   = T_mat*diag(1./sum(T_mat))
+T_mat   = diag(1./sum(T_mat,2))*T_mat; % stochastic matrix, % updated 2024.4.16: consistent with paper
 T_matIC = reshape(T_mat,[K^2,1]);
 
 Aeq = zeros(K, K^2);

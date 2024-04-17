@@ -11,7 +11,7 @@ add_mypaths;
 K   = 3;             % size of the alphabet set
 N   = 8;   
 nhbrSize = 3;       % number of sites and neighbor size in each side
-tN  = 100;          % number of time steps
+tN  = 10;          % number of time steps
 
 stoCA_par = settings_model(K,N,tN,nhbrSize);              % settings of the SCA model: N, K, graph, etc,  
   
@@ -25,15 +25,6 @@ Tmat = [Tmat(2:K,:); Tmat(1,:)];
 Tmat = diag(1./sum(Tmat,2))*Tmat; % row sum is 1. 
 stoCA_par.TMat = Tmat; 
 
-
-% demo of a trajectory
-X0 = randi(K,N,1); % ones(N,1)*1; 
-Xt_true = stoCA_model(stoCA_par,X0);
-tN =  stoCA_par.tN; gap  = ceil(tN/100); 
-tInd = 1:gap:K*6;
-figure(100); 
-subplot(131); imagesc(tInd,1:N, Xt_true(:,tInd)); xlabel('Time'); ylabel('Sites');
-% colormap("parula"); % default
 
 
 %% Estimator
@@ -63,10 +54,16 @@ norm(Tmat_lse_Ens- stoCA_par.TMat,'fro')
 
 
 %% predict synchronization
+% demo of a trajectory
+
+stoCA_par.tN = 100; 
+
+gap  = ceil(tN/100); 
+X0 = randi(K,N,1); % ones(N,1)*1; 
+Xt_true = stoCA_model(stoCA_par,X0);
+tInd = 1:gap:K*8;
+
 stoCA_par_LSE = stoCA_par; 
-
-% TMat = TMat*diag(1./sum(TMat)); % Column sum is 1. 
-
 stoCA_par_LSE.TMat = Tmat_lse; 
 Xt_lse = stoCA_model(stoCA_par_LSE,X0); 
 
@@ -79,7 +76,7 @@ figure(100); clf
 subplot(131); imagesc(Xt_true(:,tInd)); xlabel('Time'); title('True'); ylabel('Sites');
 subplot(132);  imagesc(Xt_lse(:,tInd)); xlabel('Time'); title('LSE-trajectory') % ylabel('Sites');
 subplot(133);  imagesc(Xt_lse_Ens(:,tInd)); xlabel('Time'); title('LSE-ensemble') % ylabel('Sites');
-
+% colormap("parula"); % default
 
 figname = [figpath0,'predict_synchronization',str_name];
 set_positionFontsAll;

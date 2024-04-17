@@ -1,24 +1,24 @@
 %% test convergence of the estimator -- trajectory data
-
+close all; clear all; 
 add_mypaths; 
 
 
 Mseq  = 10.^(0:5);
 nsimu = 100;
 
-N =6; K=2; 
+N =8; K=3; 
 randomT = 0; % random T in nsimu simulations ---- longer time in generating data. 
 
+tN  = 4;          % number of time steps
+nhbrSize = 3;  % number of sites and neighbor size
 %% setup
 if ~exist([SAVE_DIR,'figures/'],'dir'), mkdir([SAVE_DIR,'figures/']); end
 figpath0 = [SAVE_DIR,'figures/'];
-str_name = sprintf('N%i_K%i_M1e%i_nsimu%i_randT%i',N,K,log10(Mseq(end)),nsimu,randomT);
+str_name = sprintf('N%i_K%i_M1e%i_nsimu%i_randT%i_tN%i',N,K,log10(Mseq(end)),nsimu,randomT,tN);
 estFilename =  [SAVE_DIR,'data_convTest_',str_name,'.mat'];
 
 n_Mseq     = length(Mseq);
 
-tN  = 100;          % number of time steps
-nhbrSize = 3;  % number of sites and neighbor size
 
 stoCA_par   = settings_model(K,N,tN,nhbrSize);
 inferInfo.M = 5*Mseq(end);
